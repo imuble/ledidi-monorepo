@@ -12,9 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Echoo
-        working-directory: services/apollo-router
-        run: echo `pwd`
       - name: Build supergraph
         working-directory: services/apollo-router
         run: sh compose-supergraph.sh
