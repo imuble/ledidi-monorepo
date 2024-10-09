@@ -1,14 +1,7 @@
 name: Apollo router
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - "services/apollo-router"
-      - ".github/workflows/svc-apollo-router.yml"
-      - "services/**/*.graphql"
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, closed]
     paths:
       - "services/apollo-router"
       - ".github/workflows/svc-apollo-router.yml"
@@ -16,7 +9,7 @@ on:
 
 jobs:
   build-on-pr:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
