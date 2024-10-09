@@ -13,6 +13,7 @@ env:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   build-on-pr:
@@ -35,17 +36,17 @@ jobs:
             SUPERGRAPH_FILE=services/apollo-router/supergraph.graphql
             ROUTER_CONFIG_FILE=services/apollo-router/router.yaml
   build-and-deploy:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    # if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build supergraph
         working-directory: services/apollo-router
         run: sh compose-supergraph.sh
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
