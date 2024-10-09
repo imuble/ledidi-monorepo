@@ -1,0 +1,96 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+input CreateProjectInput
+  @join__type(graph: PROJECTS)
+{
+  name: String!
+}
+
+type CreateProjectResponse
+  @join__type(graph: PROJECTS)
+{
+  project: Project!
+}
+
+type GetProjectsResponse
+  @join__type(graph: PROJECTS)
+{
+  projects: [Project!]!
+}
+
+type GetUserResponse
+  @join__type(graph: USERS)
+{
+  user: User!
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  PROJECTS @join__graph(name: "projects", url: "http://projects:4001/graphql")
+  USERS @join__graph(name: "users", url: "http://users:4002/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Mutation
+  @join__type(graph: PROJECTS)
+  @join__type(graph: USERS)
+{
+  createProject(input: CreateProjectInput!): CreateProjectResponse! @join__field(graph: PROJECTS)
+  createUser(name: String!): User! @join__field(graph: USERS)
+}
+
+type Project
+  @join__type(graph: PROJECTS)
+{
+  id: ID!
+  name: String!
+}
+
+type Query
+  @join__type(graph: PROJECTS)
+  @join__type(graph: USERS)
+{
+  getProjects: GetProjectsResponse! @join__field(graph: PROJECTS)
+  getUser: GetUserResponse! @join__field(graph: USERS)
+}
+
+type User
+  @join__type(graph: USERS)
+{
+  id: ID!
+  name: String!
+}
