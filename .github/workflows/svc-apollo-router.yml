@@ -50,6 +50,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::082396634166:role/github_oidc_role
           aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
       - name: Verify AWS credentials
         run: |
           aws sts get-caller-identity
