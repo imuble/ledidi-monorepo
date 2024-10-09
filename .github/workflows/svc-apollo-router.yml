@@ -7,6 +7,13 @@ on:
       - ".github/workflows/svc-apollo-router.yml"
       - "services/**/*.graphql"
 
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: apollo-router
+
+permissions:
+  contents: read
+
 jobs:
   build-on-pr:
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
@@ -32,5 +39,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Echo
-        run: echo "Deploying to production"
+      - name: Build supergraph
+        working-directory: services/apollo-router
+        run: sh compose-supergraph.sh
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Echo path
+        run: echo ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+      - name: Build docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: services/apollo-router/Dockerfile
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          build-args: |
+            SUPERGRAPH_FILE=services/apollo-router/supergraph.graphql
+            ROUTER_CONFIG_FILE=services/apollo-router/router.yaml
