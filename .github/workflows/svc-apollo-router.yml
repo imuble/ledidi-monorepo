@@ -1,5 +1,8 @@
 name: Apollo router
 on:
+  push:
+    branches:
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -8,7 +11,8 @@ on:
       - "services/**/*.graphql"
 
 jobs:
-  build:
+  build-on-pr:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,3 +30,10 @@ jobs:
           build-args: |
             SUPERGRAPH_FILE=services/apollo-router/supergraph.graphql
             ROUTER_CONFIG_FILE=services/apollo-router/router.yaml
+  build-and-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Echo
+        run: echo "Deploying to production"
