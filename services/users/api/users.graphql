@@ -1,0 +1,16 @@
+type User {
+  id: ID!
+  name: String!
+}
+
+type GetUserResponse {
+  user: User!
+}
+
+type Query {
+  getUser: GetUserResponse!
+}
+
+type Mutation {
+  createUser(name: String!): User!
+}
