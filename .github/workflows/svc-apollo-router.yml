@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - "services/apollo-router/**/*"
+      - "services/apollo-router"
       - ".github/svc-apollo-router.yml"
       - "services/**/*.graphql"
 
