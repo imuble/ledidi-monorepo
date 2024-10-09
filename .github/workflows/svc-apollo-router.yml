@@ -5,13 +5,13 @@ on:
       - master
     paths:
       - "services/apollo-router"
-      - ".github/svc-apollo-router.yml"
+      - ".github/workflows/svc-apollo-router.yml"
       - "services/**/*.graphql"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - "services/apollo-router"
-      - ".github/svc-apollo-router.yml"
+      - ".github/workflows/svc-apollo-router.yml"
       - "services/**/*.graphql"
 
 jobs:
