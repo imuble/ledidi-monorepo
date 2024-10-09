@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Echoo
+        working-directory: services/apollo-router
         run: echo `pwd`
       - name: Build supergraph
         working-directory: services/apollo-router
