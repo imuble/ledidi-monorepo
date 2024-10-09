@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "services/apollo-router"
+      - ".github/svc-apollo-router.yml"
+      - "services/**/*.graphql"
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -31,7 +35,7 @@ jobs:
             SUPERGRAPH_FILE=services/apollo-router/supergraph.graphql
             ROUTER_CONFIG_FILE=services/apollo-router/router.yaml
   build-and-deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
