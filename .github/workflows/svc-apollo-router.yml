@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build supergraph
+        working-directory: services/apollo-router
         run: sh services/apollo-router/compose-supergraph.sh
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
